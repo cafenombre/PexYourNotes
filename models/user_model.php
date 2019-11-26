@@ -8,23 +8,49 @@ $usrname_test2 = "pingux2";
 $username = "pingux".rand(0,100000000);
 $pwd = "password";
 
-print_r(add_user($usrname_test, $pwd, $conn));
+//print_r(add_user($usrname_test, $pwd, $conn));
 //echo "usr id =".get_userid($usrname_test,$conn)[0][0];
+//print_r(get_userid($usrname_test,$conn));
 $id = get_userid($usrname_test,$conn)[0][0];
 //print_r(update_username($id, $username ,$conn));
 //delete_user($id, $conn);
 //update_password($id, "pwd_updated", $conn);
+//print_r(check_login($usrname_test, $pwd, $conn));
+print_r(check_login($usrname_test, "password", $conn ));
+//print_r(get_all_users($conn));
+//$crypt = encryp_pwd("password");
+//echo password_verify("password  ", $crypt);
 
 // ------------------- METHODS ------------------------
 
+//Encrypt password
+function encryp_pwd($pwd){
+    return password_hash($pwd, PASSWORD_DEFAULT);
+}
 
+//Check if usrname and pwd are mtching, if yes return id else return null 
+function check_login($username, $password, $conn){
+    //Set SQL Query
+    $sql = "SELECT * FROM `users` WHERE `username` = '".$username."'";
+    //Call the database
+    $result = mysqli_fetch_row($conn->query($sql)); 
+    // check password
+    echo $password;
+    echo $result[2];
+    echo "isitworking : ".password_verify($password, $result[2]);
+    /*if(password_verify($password, $result[2]))
+        echo "oui";*/
+        
+    //return mysqli_fetch_row($result)[0]; //return single value or null if empty
+    return 0;
+}
 
 // ------------------- DATABASE ACTIONS ------------------------
 
 //Create a user   
 function add_user($name, $pwd, $conn){
     $sql = "INSERT INTO `users` (`username`, `password`)
-    VALUES ('".$name."', '".$pwd."');";
+    VALUES ('".$name."', '".encryp_pwd($pwd)."');";
     $result = $conn->query($sql);
 
     return 0;
@@ -41,7 +67,7 @@ function update_username($id, $username, $conn){
 
 //Update password   
 function update_password($id, $pwd, $conn){
-    $sql = "UPDATE `users` SET `password` = '".$pwd."'
+    $sql = "UPDATE `users` SET `password` = '".encryp_pwd($pwd)."'
     WHERE `id` = ".$id." ;";
     $result = $conn->query($sql);
 
@@ -64,7 +90,16 @@ function get_userid($username, $conn){
     //Call the database
     $result = $conn->query($sql); 
 
-    return $result->fetch_all(); //Return as an array
+    return mysqli_fetch_row($result); //Return as an array
+}
+
+//Get all users
+function get_all_users($conn){
+    $sql = "SELECT * FROM `users`";
+
+    $result = $conn->query($sql);
+    
+    return $result->fetch_all();
 }
 
 
