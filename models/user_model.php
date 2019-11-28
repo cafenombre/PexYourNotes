@@ -15,7 +15,7 @@ $pwd = "password";
 
 //echo check_login($usrname_test, $pwd, $conn);
 
-//echo username_exists($usrname_test, $conn);
+echo username_exists($usrname_test, $conn);
 
 //echo "usr id =".get_userid($usrname_test,$conn)[0][0];
 //print_r(get_userid($usrname_test,$conn));
